@@ -35,7 +35,7 @@ class Application(tk.Frame):
             mbox.showinfo(title="Warning", message=percentages)
             file = open("Percentages.txt",'a')
 
-            file.write("{},{},{},positive\n".format(green,yellow,brown))
+            file.write("{},{},{},1\n".format(green,yellow,brown))
             file.close()
 
 
