@@ -56,7 +56,35 @@ class Color_Percent:
 
         img = cv2.imread(image)#link
 
-        brown = [145, 80, 45]  # RGB
+        lower = np.array([200, 200, 200])
+        upper = np.array([255, 255, 255])
+
+        # Create mask to only select black
+        thresh = cv2.inRange(img, lower, upper)
+
+        # apply morphology
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (20,20))
+        morph = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
+
+        # invert morp image
+        mask = 255 - morph
+        # apply mask to image
+        result = cv2.bitwise_and(img, img, mask=mask)
+        cv2.imwrite('result.jpg', result) 
+
+        img = cv2.imread('result.jpg')#link
+
+        # Scale image to small :
+        scalePercent = 0.35
+
+        # Calculate the new dimensions
+        width = int(img.shape[1] * scalePercent)
+        height = int(img.shape[0] * scalePercent)
+        newSize = (width, height)
+
+        img = cv2.resize(img, newSize, None, None, None, cv2.INTER_AREA)
+
+        brown = [145, 80, 47]  # RGB
         diff = 45
         boundaries = [([brown[2]-diff, brown[1]-diff, brown[0]-diff],
                 [brown[2]+diff, brown[1]+diff, brown[0]+diff])]
@@ -67,12 +95,12 @@ class Color_Percent:
             upper = np.array(upper, dtype=np.uint8)
             mask = cv2.inRange(img, lower, upper)
             
+            ax = np.sum(img)
+            ratio_brown = cv2.countNonZero(mask)/np.sum(img != 0)
+           
 
-            ratio_brown = cv2.countNonZero(mask)/(img.size/3)
             
-
-            
-        yellow = [255, 255, 160]  # RGB
+        yellow = [255, 255, 168]  # RGB
         diff = 160
 
         boundaries = [([yellow[2]-diff, yellow[1]-diff, yellow[0]-diff],
@@ -85,10 +113,9 @@ class Color_Percent:
             mask = cv2.inRange(img, lower, upper)
             
 
-            ratio_yellow = cv2.countNonZero(mask)/(img.size/3)
+            ratio_yellow = cv2.countNonZero(mask)/np.sum(img != 0)
             
-
-        green = [200, 255, 200]  # RGB
+        green = [204, 255, 203]  # RGB
         diff = 200
         boundaries = [([green[2]-diff, green[1]-diff, green[0]-diff],
                 [green[2]+diff, green[1]+diff, green[0]+diff])]
@@ -100,12 +127,12 @@ class Color_Percent:
             mask = cv2.inRange(img, lower, upper)
             
 
-            ratio_green = cv2.countNonZero(mask)/(img.size/3)
-            
+            ratio_green = cv2.countNonZero(mask)/np.sum(img != 0)
+           
 
-        greenpixels = np.round(ratio_green*100, 2)
-        yellowpixels = np.round(ratio_yellow*100, 2)
-        brownpixels = np.round(ratio_brown*100, 2)
+        greenpixels = np.round((ratio_green*100) / scalePercent)
+        yellowpixels = np.round((ratio_yellow*100) / scalePercent)
+        brownpixels = np.round((ratio_brown*100) / scalePercent )
 
 
         return greenpixels,yellowpixels,brownpixels
