@@ -1,0 +1,52 @@
+Request-Response:
+https://ussouthcentral.services.azureml.net/workspaces/bfe7c507cbc741abb64f025a1cd3a9e0/services/7843d42b2606493599c05d56bb4a5061/execute?api-version=2.0&format=swagger
+
+Batch Request:
+https://ussouthcentral.services.azureml.net/workspaces/bfe7c507cbc741abb64f025a1cd3a9e0/services/7843d42b2606493599c05d56bb4a5061/jobs?api-version=2.0
+
+Primary Key:
+rK9qnUcJQH6U0wOnD0qszdNREOpNudHCSfBdPI4mIhBhjILEysPA7nOJKIi18ZGQh9z5Obv2SXbxzojOnSXnfA==
+
+Secondary Key:
+ZBa6+EGX4KZ4cbhTvJq1tVBvASLRg7i89Hhh8u5HtLStUfjVoI/JXm5+chQiNE4zzAPGSjsntl9aqIbsUMRi4w==
+
+Python Sample Consume:
+
+import urllib.request
+import json
+
+data = {
+        "Inputs": {
+                "input1":
+                [
+                    {
+                            'Green Pixels': "1",   
+                            'Yellow Pixels': "1",   
+                            'Brown Pixels': "1",   
+                            'Assessment': "1",   
+                    }
+                ],
+        },
+    "GlobalParameters":  {
+    }
+}
+
+body = str.encode(json.dumps(data))
+
+url = 'https://ussouthcentral.services.azureml.net/workspaces/bfe7c507cbc741abb64f025a1cd3a9e0/services/7843d42b2606493599c05d56bb4a5061/execute?api-version=2.0&format=swagger'
+api_key = 'abc123' # Replace this with the API key for the web service
+headers = {'Content-Type':'application/json', 'Authorization':('Bearer '+ api_key)}
+
+req = urllib.request.Request(url, body, headers)
+
+try:
+    response = urllib.request.urlopen(req)
+
+    result = response.read()
+    print(result)
+except urllib.error.HTTPError as error:
+    print("The request failed with status code: " + str(error.code))
+
+    # Print the headers - they include the requert ID and the timestamp, which are useful for debugging the failure
+    print(error.info())
+    print(json.loads(error.read().decode("utf8", 'ignore')))
